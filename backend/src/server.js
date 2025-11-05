@@ -1,12 +1,12 @@
-const express = require("express");
+// src/server.js
+import app from "./app.js";
 
-const app = express();
-const port = 3000;
+const PORT = process.env.PORT || 5000;
 
-app.get("/", (req, res) => {
-  res.send("Hello world !");
-});
-
-app.listen(port, () => {
-  console.log(`Express is serving on port ${port}`);
+app.listen(PORT, () => {
+  console.log("🚀 ================================");
+  console.log(`🚀 Serveur démarré sur le port ${PORT}`);
+  console.log(`🚀 Environnement: ${process.env.NODE_ENV || "development"}`);
+  console.log(`🚀 API disponible sur http://localhost:${PORT}/api`);
+  console.log("🚀 ================================");
 });
