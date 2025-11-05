@@ -1,0 +1,10 @@
+{
+  "sqltools.connections": [
+    {
+      "previewLimit": 50,
+      "driver": "SQLite",
+      "name": "express-sqlite-connection",
+      "database": "${workspaceFolder:ScheduleManager}/backend/db/dev.db"
+    }
+  ]
+}

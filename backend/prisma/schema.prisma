@@ -1,0 +1,148 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ==================== DONNÉES DE RÉFÉRENCE ====================
+
+// Matières enseignées
+model Matiere {
+  id        String   @id @default(uuid())
+  code      String   @unique  // "ALGO", "BDD", "RESEAU"
+  nom       String              // "Algorithmique", "Base de données"
+  couleur   String   @default("#3B82F6")  // Pour l'affichage
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  cours     Cours[]
+}
+
+// Enseignants
+model Professeur {
+  id        String   @id @default(uuid())
+  nom       String
+  prenom    String
+  email     String?  @unique
+  telephone String?
+  statut    String   @default("permanent")  // "permanent", "vacataire"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  cours     Cours[]
+  
+  @@index([nom, prenom])
+}
+
+// Classes (ex: "L1 Pro Grp 1", "M2 GB Grp 2")
+model Classe {
+  id           String   @id @default(uuid())
+  code         String   @unique  // "L1-PRO-G1", "M2-GB-G2"
+  nom          String              // "L1 Pro Groupe 1"
+  niveau       String              // "L1", "L2", "L3", "M1", "M2"
+  parcours     String?             // "GB", "ASR", "IG", "GID", "OCC", "MDI"
+  groupe       Int      @default(1)  // 1, 2
+  nombreEleves Int      @default(50)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  cours        Cours[]
+  
+  @@index([niveau, parcours])
+}
+
+// Salles
+model Salle {
+  id        String   @id @default(uuid())
+  numero    String   @unique  // "001", "101", "210"
+  capacite  Int      @default(80)
+  type      String   @default("standard")  // "standard", "labo", "amphi"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  cours     Cours[]
+  
+  @@index([numero])
+}
+
+// Créneaux horaires
+model Creneau {
+  id         String   @id @default(uuid())
+  nom        String      // "08h00-09h30", "10h00-11h30"
+  heureDebut String      // "08:00"
+  heureFin   String      // "09:30"
+  ordre      Int         // 1, 2, 3... pour trier
+  type       String   @default("cours")  // "cours", "pause"
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  
+  cours      Cours[]
+  
+  @@unique([heureDebut, heureFin])
+  @@index([ordre])
+}
+
+// ==================== COEUR DU SYSTÈME ====================
+
+// Cours dans l'emploi du temps
+model Cours {
+  id        String   @id @default(uuid())
+  
+  // Relations
+  matiereId    String
+  matiere      Matiere @relation(fields: [matiereId], references: [id], onDelete: Cascade)
+  
+  professeurId String
+  professeur   Professeur @relation(fields: [professeurId], references: [id], onDelete: Cascade)
+  
+  classeId     String
+  classe       Classe @relation(fields: [classeId], references: [id], onDelete: Cascade)
+  
+  salleId      String
+  salle        Salle @relation(fields: [salleId], references: [id], onDelete: Cascade)
+  
+  creneauId    String
+  creneau      Creneau @relation(fields: [creneauId], references: [id], onDelete: Cascade)
+  
+  // Temporalité
+  jour         String   // "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"
+  semestre     String   @default("S1")  // "S1", "S2", etc.
+  
+  // Métadonnées
+  typeSeance   String   @default("CM")  // "CM", "TD", "TP" (pour plus tard)
+  notes        String?
+  estAnnule    Boolean  @default(false)
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  // Index pour optimiser les requêtes fréquentes
+  @@index([jour, creneauId])
+  @@index([professeurId, jour, creneauId])
+  @@index([salleId, jour, creneauId])
+  @@index([classeId, semestre])
+  
+  // CONTRAINTE IMPORTANTE: Une classe ne peut pas avoir 2 cours au même moment
+  @@unique([classeId, jour, creneauId, semestre])
+}
+
+// ==================== AUDIT (Optionnel - pour plus tard) ====================
+
+model Utilisateur {
+  id           String   @id @default(uuid())
+  nom          String
+  prenom       String
+  email        String   @unique
+  motDePasse   String
+  role         String   @default("editeur")  // "admin", "editeur", "lecteur"
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  @@index([email])
+}
