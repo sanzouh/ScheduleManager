@@ -2,6 +2,18 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
+// Fonction pour nettoyer la DB avant le seed
+async function cleanup() {
+  console.log("🧹 Nettoyage de la base de données...");
+  await prisma.cours.deleteMany();
+  await prisma.creneau.deleteMany();
+  await prisma.salle.deleteMany();
+  await prisma.professeur.deleteMany();
+  await prisma.matiere.deleteMany();
+  await prisma.classe.deleteMany();
+  console.log("✅ Base nettoyée");
+}
+
 async function main() {
   console.log("🌱 Début du seed...");
 
@@ -19,7 +31,7 @@ async function main() {
       },
       {
         nom: "10h00-12h00",
-        heureDebut: "10h00",
+        heureDebut: "10:00",
         heureFin: "12:00",
         ordre: 2,
         type: "cours",
@@ -46,9 +58,8 @@ async function main() {
         type: "cours",
       },
     ],
-    skipDuplicates: true,
   });
-  console.log(`✅ ${creneaux.count()} créneaux créés`);
+  console.log(`✅ ${creneaux.count} créneaux créés`);
 
   // ==================== SALLES ====================
   console.log("🏫 Création des salles...");
@@ -72,7 +83,6 @@ async function main() {
       { numero: "110", capacite: 130, type: "standard" },
       { numero: "210", capacite: 50, type: "labo" },
     ],
-    skipDuplicates: true,
   });
   console.log(`✅ ${salles.count} salles créées`);
 
@@ -154,7 +164,6 @@ async function main() {
         statut: "vacataire",
       },
     ],
-    skipDuplicates: true,
   });
   console.log(`✅ ${professeurs.count} professeurs créés`);
 
@@ -185,7 +194,6 @@ async function main() {
       { code: "CYBER-SEC", nom: "Cybersécurité", couleur: "#DC2626" },
       { code: "ANGLAIS", nom: "Anglais", couleur: "#059669" },
     ],
-    skipDuplicates: true,
   });
   console.log(`✅ ${matieres.count} matières créées`);
 
@@ -372,7 +380,6 @@ async function main() {
         nombreEleves: 112,
       },
     ],
-    skipDuplicates: true,
   });
   console.log(`✅ ${classes.count} classes créées`);
 
