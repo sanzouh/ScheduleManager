@@ -1,5 +1,6 @@
 // src/routes/index.js
 import express from "express";
+import professeurRoutes from "./professeurRoutes.js";
 
 const router = express.Router();
 
@@ -14,6 +15,6 @@ router.get("/health", (req, res) => {
 
 // Les autres routes seront montées ici plus tard
 // router.use('/cours', coursRoutes);
-// router.use('/professeurs', professeurRoutes);
+router.use("/professeurs", professeurRoutes);
 
 export default router;
