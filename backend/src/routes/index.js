@@ -5,6 +5,7 @@ import classeRoutes from "./classeRoutes.js";
 import matiereRoutes from "./matiereRoutes.js";
 import salleRoutes from "./salleRoutes.js";
 import creneauRoutes from "./creneauRoutes.js";
+import coursRoutes from "./coursRoutes.js";
 
 const router = express.Router();
 
@@ -24,5 +25,6 @@ router.use("/classes", classeRoutes);
 router.use("/matieres", matiereRoutes);
 router.use("/salles", salleRoutes);
 router.use("/creneaux", creneauRoutes);
+router.use("/cours", coursRoutes);
 
 export default router;
