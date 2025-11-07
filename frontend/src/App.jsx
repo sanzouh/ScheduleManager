@@ -1,35 +1,32 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState, useEffect } from "react";
+import axios from "./api/axiosConfig";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [status, setStatus] = useState("Chargement...");
+
+  useEffect(() => {
+    const testConnection = async () => {
+      try {
+        const response = await axios.get("/health");
+        setStatus(`✅ Connecté : ${response.data.message}`);
+      } catch (error) {
+        setStatus("❌ Erreur de connexion au backend");
+      }
+    };
+
+    testConnection();
+  }, []);
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="bg-white p-8 rounded-xl shadow-lg">
+        <h1 className="text-3xl font-bold text-gray-900 mb-4">
+          ENI Schedule Manager
+        </h1>
+        <p className="text-gray-600">{status}</p>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    </div>
+  );
 }
 
-export default App
+export default App;
