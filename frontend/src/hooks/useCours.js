@@ -1,5 +1,5 @@
 // src/hooks/useCours.js
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { coursApi } from "../api/coursApi";
 
 export const useCours = (filters = {}) => {
@@ -8,28 +8,18 @@ export const useCours = (filters = {}) => {
   const [error, setError] = useState(null);
 
   // Charger les cours
-  const fetchCours = useCallback(async () => {
+  const fetchCours = async () => {
     try {
       setLoading(true);
       setError(null);
       const data = await coursApi.getWeekSchedule(filters);
-      setCours(data.data || []);
+      setCours(data);
     } catch (err) {
-      setError(
-        err.response?.data?.message || "Erreur lors du chargement des cours"
-      );
-      console.error("Erreur fetchCours:", err);
+      setError(err.response?.data?.message || "Erreur lors du chargement");
     } finally {
       setLoading(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    filters.classeId,
-    filters.professeurId,
-    filters.salleId,
-    filters.jour,
-    filters.semestre,
-  ]);
+  };
 
   // Créer un cours
   const createCours = async (coursData) => {
@@ -104,7 +94,7 @@ export const useCours = (filters = {}) => {
   // Charger au montage et quand les filtres changent
   useEffect(() => {
     fetchCours();
-  }, [fetchCours]);
+  }, [JSON.stringify(filters)]);
 
   return {
     cours,
