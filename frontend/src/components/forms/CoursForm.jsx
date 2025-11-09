@@ -60,19 +60,14 @@ export const CoursForm = ({
         setConflits(result.valide ? [] : result.conflits || []);
       } catch (error) {
         console.error("Erreur validation:", error);
+        setConflits([]); // ← AJOUTÉ : Réinitialiser en cas d'erreur
       } finally {
         setValidating(false);
       }
     }, 500); // 500ms de délai
 
     return () => clearTimeout(timeoutId);
-  }, [
-    formData.professeurId,
-    formData.classeId,
-    formData.salleId,
-    formData.creneauId,
-    formData.jour,
-  ]);
+  }, [formData]); // ← MODIFIÉ : Utiliser formData entier
 
   const handleChange = (name, value) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
