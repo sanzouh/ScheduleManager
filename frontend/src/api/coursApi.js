@@ -17,9 +17,18 @@ export const coursApi = {
 
   // GET - Emploi du temps de la semaine
   getWeekSchedule: async (filters = {}) => {
-    const params = new URLSearchParams(filters);
+    const params = new URLSearchParams();
+
+    // ← MODIFIÉ : Accepter n'importe quel filtre
+    if (filters.classeId) params.append("classeId", filters.classeId);
+    if (filters.professeurId)
+      params.append("professeurId", filters.professeurId);
+    if (filters.salleId) params.append("salleId", filters.salleId);
+    if (filters.semestre) params.append("semestre", filters.semestre);
+    if (filters.jour) params.append("jour", filters.jour);
+
     const response = await axios.get(`/cours/semaine?${params.toString()}`);
-    return response.data;
+    return response.data.data; // Retourner directement le tableau
   },
 
   // GET - Un cours par ID

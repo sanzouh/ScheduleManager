@@ -15,12 +15,26 @@ import { VUES } from "./utils/constants";
 function App() {
   const [selectedView, setSelectedView] = useState(VUES.CLASSE);
   const [selectedClasse, setSelectedClasse] = useState("");
+  const [selectedProfesseur, setSelectedProfesseur] = useState("");
+  const [selectedSalle, setSelectedSalle] = useState("");
   const [selectedSemestre, setSelectedSemestre] = useState("S1");
 
   // État modal
   const [modalOpen, setModalOpen] = useState(false);
   const [editingCours, setEditingCours] = useState(null);
   const [defaultSlot, setDefaultSlot] = useState(null);
+
+  const filters = {
+    semestre: selectedSemestre,
+  };
+
+  if (selectedView === VUES.CLASSE && selectedClasse) {
+    filters.classeId = selectedClasse;
+  } else if (selectedView === VUES.PROFESSEUR && selectedProfesseur) {
+    filters.professeurId = selectedProfesseur;
+  } else if (selectedView === VUES.SALLE && selectedSalle) {
+    filters.salleId = selectedSalle;
+  }
 
   const {
     cours,
@@ -29,13 +43,12 @@ function App() {
     createCours,
     updateCours,
     deleteCours,
-  } = useCours({
-    classeId: selectedClasse,
-    semestre: selectedSemestre,
-  });
+  } = useCours(filters);
 
   const {
     classes,
+    professeurs, // ← AJOUTÉ
+    salles,
     creneaux,
     loading: refLoading,
     error: refError,
@@ -100,9 +113,15 @@ function App() {
         onViewChange={setSelectedView}
         selectedClasse={selectedClasse}
         onClasseChange={setSelectedClasse}
+        selectedProfesseur={selectedProfesseur}
+        onProfesseurChange={setSelectedProfesseur}
+        selectedSalle={selectedSalle}
+        onSalleChange={setSelectedSalle}
         selectedSemestre={selectedSemestre}
         onSemestreChange={setSelectedSemestre}
         classes={classes}
+        professeurs={professeurs}
+        salles={salles}
       />
 
       <main className="container mx-auto px-6 py-8">
