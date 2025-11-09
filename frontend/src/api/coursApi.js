@@ -58,6 +58,7 @@ export const coursApi = {
   // POST - Valider (vérifier conflits)
   validate: async (coursData) => {
     const response = await axios.post("/cours/valider", coursData);
-    return response.data;
+    // ← MODIFIÉ : Retourner directement data.data (car backend renvoie { success, data })
+    return response.data.data || response.data;
   },
 };
