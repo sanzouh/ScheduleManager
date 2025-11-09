@@ -42,7 +42,7 @@ function App() {
     error: coursError,
     createCours,
     updateCours,
-    deleteCours,
+    // deleteCours,
   } = useCours(filters);
 
   const {
@@ -76,7 +76,18 @@ function App() {
 
   const handleEmptySlotClick = (slot) => {
     setEditingCours(null);
-    setDefaultSlot(slot);
+
+    // Enrichir defaultSlot avec les filtres actifs
+    const enrichedSlot = {
+      ...slot,
+      classeId: selectedView === VUES.CLASSE ? selectedClasse : undefined,
+      professeurId:
+        selectedView === VUES.PROFESSEUR ? selectedProfesseur : undefined,
+      salleId: selectedView === VUES.SALLE ? selectedSalle : undefined,
+      semestre: selectedSemestre,
+    };
+
+    setDefaultSlot(enrichedSlot);
     setModalOpen(true);
   };
 

@@ -26,12 +26,12 @@ export const CoursForm = ({
   // État du formulaire
   const [formData, setFormData] = useState({
     matiereId: initialData?.matiereId || "",
-    professeurId: initialData?.professeurId || "",
-    classeId: initialData?.classeId || "",
-    salleId: initialData?.salleId || "",
+    professeurId: initialData?.professeurId || defaultSlot?.professeurId || "",
+    classeId: initialData?.classeId || defaultSlot?.classeId || "",
+    salleId: initialData?.salleId || defaultSlot?.salleId || "",
     creneauId: initialData?.creneauId || defaultSlot?.creneauId || "",
     jour: initialData?.jour || defaultSlot?.jour || "Lundi",
-    semestre: initialData?.semestre || "S1",
+    semestre: initialData?.semestre || defaultSlot?.semestre || "S1",
     notes: initialData?.notes || "",
   });
 
@@ -108,7 +108,7 @@ export const CoursForm = ({
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       {/* Matière */}
-      <div>
+      <div className="space-y-2">
         <Label htmlFor="matiere">Matière *</Label>
         <Select
           value={formData.matiereId}
@@ -137,7 +137,7 @@ export const CoursForm = ({
       </div>
 
       {/* Professeur */}
-      <div>
+      <div className="space-y-2">
         <Label htmlFor="professeur">Professeur *</Label>
         <Select
           value={formData.professeurId}
@@ -162,7 +162,7 @@ export const CoursForm = ({
       </div>
 
       {/* Classe */}
-      <div>
+      <div className="space-y-2">
         <Label htmlFor="classe">Classe *</Label>
         <Select
           value={formData.classeId}
@@ -185,7 +185,7 @@ export const CoursForm = ({
       </div>
 
       {/* Salle */}
-      <div>
+      <div className="space-y-2">
         <Label htmlFor="salle">Salle *</Label>
         <Select
           value={formData.salleId}
@@ -209,7 +209,7 @@ export const CoursForm = ({
 
       {/* Jour + Créneau */}
       <div className="grid grid-cols-2 gap-4">
-        <div>
+        <div className="space-y-2">
           <Label htmlFor="jour">Jour *</Label>
           <Select
             value={formData.jour}
@@ -228,7 +228,7 @@ export const CoursForm = ({
           </Select>
         </div>
 
-        <div>
+        <div className="space-y-2">
           <Label htmlFor="creneau">Créneau *</Label>
           <Select
             value={formData.creneauId}
@@ -254,7 +254,7 @@ export const CoursForm = ({
       </div>
 
       {/* Semestre */}
-      <div>
+      <div className="space-y-2">
         <Label htmlFor="semestre">Semestre *</Label>
         <Select
           value={formData.semestre}
@@ -271,7 +271,7 @@ export const CoursForm = ({
       </div>
 
       {/* Notes */}
-      <div>
+      <div className="space-y-2">
         <Label htmlFor="notes">Notes (optionnel)</Label>
         <Textarea
           value={formData.notes}
