@@ -4,6 +4,9 @@ import { CourseCard } from "./CourseCard";
 import { CompactCourseCard } from "./CompactCourseCard";
 import { EmptySlot } from "./EmptySlot";
 import { CoursListModal } from "../modals/CoursListModal";
+import { DeleteConfirmDialog } from "../modals/DeleteConfirmDialog";
+import { ContextMenu } from "../common/ContextMenu";
+import { Pencil, Copy, Trash2, Eye } from "lucide-react";
 import { JOURS_SEMAINE } from "@/utils/constants.js";
 
 export const ScheduleGrid = ({
@@ -11,12 +14,21 @@ export const ScheduleGrid = ({
   creneaux = [],
   onCoursClick,
   onEmptySlotClick,
+  onCoursDelete, // ← AJOUTÉ
+  onCoursDuplicate, // ← AJOUTÉ
   viewMode = "global", // ← AJOUTÉ : Savoir si vue filtrée ou globale
 }) => {
   // ← AJOUTÉ : État pour le modal "voir plus"
   const [modalListOpen, setModalListOpen] = useState(false);
   const [selectedSlotCours, setSelectedSlotCours] = useState([]);
   const [selectedSlotInfo, setSelectedSlotInfo] = useState(null);
+  // ← AJOUTÉ : État pour le menu contextuel
+  const [contextMenu, setContextMenu] = useState(null);
+
+  // ← AJOUTÉ : État pour le dialog de confirmation
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [coursToDelete, setCoursToDelete] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const getCoursForSlot = (jour, creneauId) => {
     return cours.filter((c) => c.jour === jour && c.creneauId === creneauId);
@@ -27,6 +39,60 @@ export const ScheduleGrid = ({
     setSelectedSlotCours(coursList);
     setSelectedSlotInfo({ jour, creneau });
     setModalListOpen(true);
+  };
+
+  // ← AJOUTÉ : Handler clic droit sur une carte
+  const handleContextMenu = (e, cours) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    setContextMenu({
+      x: e.clientX,
+      y: e.clientY,
+      cours,
+    });
+  };
+
+  // ← AJOUTÉ : Actions du menu contextuel
+  const getContextMenuActions = (cours) => [
+    {
+      label: "Modifier",
+      icon: <Pencil className="w-4 h-4" />,
+      onClick: () => onCoursClick(cours),
+    },
+    {
+      label: "Dupliquer",
+      icon: <Copy className="w-4 h-4" />,
+      onClick: () => onCoursDuplicate?.(cours),
+    },
+    {
+      label: "Voir détails",
+      icon: <Eye className="w-4 h-4" />,
+      onClick: () => {
+        console.log("Détails:", cours);
+      },
+    },
+    {
+      label: "Supprimer",
+      icon: <Trash2 className="w-4 h-4" />,
+      danger: true,
+      onClick: () => {
+        // ← MODIFIÉ : Ouvrir le dialog au lieu de l'alert
+        setCoursToDelete(cours);
+        setDeleteDialogOpen(true);
+      },
+    },
+  ];
+
+  // ← AJOUTÉ : Handler pour confirmer la suppression
+  const handleConfirmDelete = async () => {
+    if (!coursToDelete) return;
+
+    setIsDeleting(true);
+    await onCoursDelete?.(coursToDelete.id);
+    setIsDeleting(false);
+    setDeleteDialogOpen(false);
+    setCoursToDelete(null);
   };
 
   if (creneaux.length === 0) {
@@ -106,6 +172,7 @@ export const ScheduleGrid = ({
                                 key={c.id}
                                 cours={c}
                                 onClick={onCoursClick}
+                                onContextMenu={(e) => handleContextMenu(e, c)}
                                 showClasse={true}
                               />
                             ) : (
@@ -113,6 +180,7 @@ export const ScheduleGrid = ({
                                 key={c.id}
                                 cours={c}
                                 onClick={onCoursClick}
+                                onContextMenu={(e) => handleContextMenu(e, c)}
                                 showClasse={false}
                               />
                             )
@@ -159,6 +227,29 @@ export const ScheduleGrid = ({
         jour={selectedSlotInfo?.jour}
         creneau={selectedSlotInfo?.creneau}
         onCoursClick={onCoursClick} // ← AJOUTÉ : Passer le handler
+        onCoursDelete={onCoursDelete} // ← AJOUTÉ
+      />
+
+      {/* ← AJOUTÉ : Menu contextuel */}
+      {contextMenu && (
+        <ContextMenu
+          x={contextMenu.x}
+          y={contextMenu.y}
+          onClose={() => setContextMenu(null)}
+          actions={getContextMenuActions(contextMenu.cours)}
+        />
+      )}
+
+      {/* ← AJOUTÉ : Dialog de confirmation de suppression */}
+      <DeleteConfirmDialog
+        isOpen={deleteDialogOpen}
+        onClose={() => {
+          setDeleteDialogOpen(false);
+          setCoursToDelete(null);
+        }}
+        onConfirm={handleConfirmDelete}
+        cours={coursToDelete}
+        isDeleting={isDeleting}
       />
     </>
   );

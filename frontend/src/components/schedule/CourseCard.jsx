@@ -1,9 +1,15 @@
-export const CourseCard = ({ cours, onClick, showClasse = false }) => {
+export const CourseCard = ({
+  cours,
+  onClick,
+  onContextMenu,
+  showClasse = false,
+}) => {
   return (
     <div
-      className="min-h-24 cursor-pointer rounded-lg p-3 text-white transition-all hover:opacity-90 hover:shadow-lg"
+      className="min-h-24 cursor-context-menu rounded-lg p-3 text-white transition-all hover:opacity-90 hover:shadow-lg hover:ring-2 hover:ring-white/50"
       style={{ backgroundColor: cours.matiere?.couleur || "#3B82F6" }}
       onClick={() => onClick?.(cours)}
+      onContextMenu={onContextMenu} // ← AJOUTÉ : Support clic droit
     >
       {/* Nom de la matière */}
       <div className="font-semibold text-sm leading-tight mb-1">

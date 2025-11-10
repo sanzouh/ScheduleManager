@@ -1,9 +1,15 @@
-export const CompactCourseCard = ({ cours, onClick, showClasse = false }) => {
+export const CompactCourseCard = ({
+  cours,
+  onClick,
+  onContextMenu,
+  showClasse = false,
+}) => {
   return (
     <div
-      className="min-h-[60px] cursor-pointer rounded-md p-2 text-white transition-all hover:opacity-90 hover:shadow-md text-xs"
+      className="min-h-[60px] cursor-context-menu rounded-md p-2 text-white transition-all hover:opacity-90 hover:shadow-md text-xs hover:ring-2 hover:ring-white/50"
       style={{ backgroundColor: cours.matiere?.couleur || "#3B82F6" }}
       onClick={() => onClick?.(cours)}
+      onContextMenu={onContextMenu} // ← AJOUTÉ : Support clic droit
     >
       {/* Matière - plus petit */}
       <div className="font-semibold text-xs leading-tight mb-0.5 truncate">

@@ -42,7 +42,7 @@ function App() {
     error: coursError,
     createCours,
     updateCours,
-    // deleteCours,
+    deleteCours,
   } = useCours(filters);
 
   const {
@@ -113,6 +113,33 @@ function App() {
     }
   };
 
+  // ← AJOUTÉ : Handler pour supprimer
+  const handleDeleteCours = async (coursId) => {
+    const result = await deleteCours(coursId);
+    if (result.success) {
+      toast.success("Cours supprimé avec succès !");
+    } else {
+      toast.error(result.error || "Erreur lors de la suppression");
+    }
+  };
+
+  // ← AJOUTÉ : Handler pour dupliquer
+  const handleDuplicateCours = (cours) => {
+    // Pré-remplir le formulaire avec les données du cours
+    setEditingCours(null); // Mode création
+    setDefaultSlot({
+      matiereId: cours.matiereId,
+      professeurId: cours.professeurId,
+      classeId: cours.classeId,
+      salleId: cours.salleId,
+      creneauId: cours.creneauId,
+      jour: cours.jour,
+      semestre: cours.semestre,
+      notes: cours.notes ? `Copie - ${cours.notes}` : "Copie",
+    });
+    setModalOpen(true);
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Toaster position="top-right" />
@@ -153,6 +180,8 @@ function App() {
                 creneaux={creneaux}
                 onCoursClick={handleCoursClick}
                 onEmptySlotClick={handleEmptySlotClick}
+                onCoursDelete={handleDeleteCours} // ← AJOUTÉ
+                onCoursDuplicate={handleDuplicateCours} // ← AJOUTÉ
                 viewMode={
                   // ← AJOUTÉ : Déterminer le mode d'affichage
                   !selectedClasse && !selectedProfesseur && !selectedSalle
