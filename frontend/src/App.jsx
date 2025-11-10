@@ -153,6 +153,12 @@ function App() {
                 creneaux={creneaux}
                 onCoursClick={handleCoursClick}
                 onEmptySlotClick={handleEmptySlotClick}
+                viewMode={
+                  // ← AJOUTÉ : Déterminer le mode d'affichage
+                  !selectedClasse && !selectedProfesseur && !selectedSalle
+                    ? "global"
+                    : "filtered"
+                }
               />
             </CardContent>
           </Card>
