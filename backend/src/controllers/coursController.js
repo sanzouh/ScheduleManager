@@ -216,8 +216,8 @@ export const deleteCours = async (req, res, next) => {
 // POST - Valider un cours (vérifier conflits sans créer)
 export const validateCours = async (req, res, next) => {
   try {
-    const coursData = req.body;
-    const validation = await checkConflicts(coursData);
+    const { excludeId, ...coursData } = req.body;
+    const validation = await checkConflicts(coursData, excludeId);
 
     res.json({
       success: true,
