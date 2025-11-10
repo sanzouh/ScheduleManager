@@ -56,8 +56,11 @@ export const coursApi = {
   },
 
   // POST - Valider (vérifier conflits)
-  validate: async (coursData) => {
-    const response = await axios.post("/cours/valider", coursData);
+  validate: async (coursData, excludeId = null) => {
+    const response = await axios.post("/cours/valider", {
+      ...coursData,
+      excludeId, // ← AJOUTÉ : Envoyer excludeId au backend
+    });
     // ← MODIFIÉ : Retourner directement data.data (car backend renvoie { success, data })
     return response.data.data || response.data;
   },

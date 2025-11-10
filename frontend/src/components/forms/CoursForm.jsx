@@ -42,13 +42,13 @@ export const CoursForm = ({
 
   // Validation en temps réel (débounce)
   useEffect(() => {
-    if (
-      !formData.matiereId ||
-      !formData.professeurId ||
-      !formData.classeId ||
-      !formData.salleId ||
-      !formData.creneauId
-    ) {
+    // ← MODIFIÉ : Conditions minimales pour validation progressive
+    const hasMinimalInfo =
+      formData.jour &&
+      formData.creneauId &&
+      (formData.professeurId || formData.classeId || formData.salleId);
+
+    if (!hasMinimalInfo) {
       setConflits([]);
       return;
     }
@@ -56,8 +56,18 @@ export const CoursForm = ({
     const timeoutId = setTimeout(async () => {
       setValidating(true);
       try {
-        const result = await coursApi.validate(formData);
-        setConflits(result.valide ? [] : result.conflits || []);
+        const result = await coursApi.validate(formData, initialData?.id); // Exclure le cours actuel si en mode édition
+
+        // ← AJOUTÉ : Filtrer les conflits selon les champs remplis
+        const relevantConflits = (result.conflits || []).filter((conflit) => {
+          if (conflit.type === "professeur" && !formData.professeurId)
+            return false;
+          if (conflit.type === "classe" && !formData.classeId) return false;
+          if (conflit.type === "salle" && !formData.salleId) return false;
+          return true;
+        });
+
+        setConflits(result.valide ? [] : relevantConflits);
       } catch (error) {
         console.error("Erreur validation:", error);
         setConflits([]); // ← AJOUTÉ : Réinitialiser en cas d'erreur
@@ -67,7 +77,16 @@ export const CoursForm = ({
     }, 500); // 500ms de délai
 
     return () => clearTimeout(timeoutId);
-  }, [formData]); // ← MODIFIÉ : Utiliser formData entier
+  }, [
+    // ← MODIFIÉ : Dépendances spécifiques plutôt que formData entier
+    formData.professeurId,
+    formData.classeId,
+    formData.salleId,
+    formData.creneauId,
+    formData.jour,
+    formData.semestre,
+    initialData?.id, // Revalider si l'ID change
+  ]);
 
   const handleChange = (name, value) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
