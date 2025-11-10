@@ -20,7 +20,7 @@ export const CoursForm = ({
   initialData = null,
   defaultSlot = null,
 }) => {
-  const { matieres, professeurs, classes, salles, creneaux } =
+  const { matieres, professeurs, classes, salles, creneaux, loading } =
     useReferenceData();
 
   // État du formulaire
@@ -118,6 +118,20 @@ export const CoursForm = ({
   };
 
   const hasConflits = conflits.length > 0;
+
+  // ← AJOUTÉ : Afficher skeleton si loading
+  if (loading) {
+    return (
+      <div className="space-y-4">
+        {[...Array(8)].map((_, i) => (
+          <div key={i} className="space-y-2">
+            <div className="h-4 w-24 bg-gray-200 rounded animate-pulse" />
+            <div className="h-10 w-full bg-gray-100 rounded animate-pulse" />
+          </div>
+        ))}
+      </div>
+    );
+  }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -295,33 +309,35 @@ export const CoursForm = ({
         />
       </div>
 
-      {/* Conflits */}
-      {validating && (
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Loader2 className="h-4 w-4 animate-spin" />
-          Vérification des conflits...
-        </div>
-      )}
+      <div className="min-h-[100px]">
+        {/* Conflits */}
+        {validating && (
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            Vérification des conflits...
+          </div>
+        )}
 
-      {hasConflits && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-          <div className="flex items-start gap-2">
-            <AlertCircle className="h-5 w-5 text-red-500 mt-0.5" />
-            <div className="flex-1">
-              <h4 className="font-semibold text-red-900 mb-2">
-                Conflits détectés
-              </h4>
-              <ul className="space-y-1">
-                {conflits.map((conflit, idx) => (
-                  <li key={idx} className="text-sm text-red-700">
-                    • {conflit.message}
-                  </li>
-                ))}
-              </ul>
+        {hasConflits && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+            <div className="flex items-start gap-2">
+              <AlertCircle className="h-5 w-5 text-red-500 mt-0.5" />
+              <div className="flex-1">
+                <h4 className="font-semibold text-red-900 mb-2">
+                  Conflits détectés
+                </h4>
+                <ul className="space-y-1">
+                  {conflits.map((conflit, idx) => (
+                    <li key={idx} className="text-sm text-red-700">
+                      • {conflit.message}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Boutons */}
       <div className="flex gap-3 justify-end pt-4 border-t">

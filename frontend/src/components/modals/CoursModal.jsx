@@ -16,7 +16,10 @@ export const CoursModal = ({
 }) => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent
+        className="max-w-2xl max-h-[90vh] overflow-y-auto min-h-[650px] transition-all duration-200" // ← Hauteur min
+        onOpenAutoFocus={(e) => e.preventDefault()} // ← Pas de recentrage
+      >
         <DialogHeader>
           <DialogTitle>
             {initialData ? "MODIFIER LE COURS" : "NOUVEAU COURS"}
