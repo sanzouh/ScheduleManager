@@ -5,6 +5,7 @@ Plateforme collaborative pour la création et la gestion d'emploi du temps unive
 ## 📋 Description
 
 ScheduleManager est une application web permettant de gérer efficacement les emplois du temps universitaires. Elle permet de :
+
 - Créer et gérer des cours
 - Assigner des professeurs aux cours
 - Gérer les salles et les créneaux horaires
@@ -14,19 +15,22 @@ ScheduleManager est une application web permettant de gérer efficacement les em
 ## 🚀 Technologies utilisées
 
 ### Backend
+
 - **Node.js** avec **Express** (serveur API REST)
 - **Prisma** (ORM)
 - **SQLite** (base de données)
 - **Jest** (tests unitaires)
-- **Express Validator** (validation des données)
 
 ### Frontend
+
 - **React 19** avec **Vite**
 - **ESLint** (qualité de code)
+- **Shadcn** (templates ui)
 
 ## 📦 Prérequis
 
 Avant de commencer, assurez-vous d'avoir installé :
+
 - **Node.js** (version 18 ou supérieure)
 - **npm** (inclus avec Node.js)
 - **Git**
@@ -93,22 +97,27 @@ VITE_API_URL=http://localhost:3000
 Vous aurez besoin de **deux terminaux** :
 
 **Terminal 1 - Backend :**
+
 ```bash
 cd backend
 npm run dev
 ```
+
 Le serveur backend démarre sur `http://localhost:3000`
 
 **Terminal 2 - Frontend :**
+
 ```bash
 cd frontend
 npm run dev
 ```
+
 Le serveur frontend démarre sur `http://localhost:5173`
 
 ### Autres commandes utiles
 
 **Backend :**
+
 ```bash
 npm run dev      # Lance le serveur en mode développement avec rechargement automatique
 npm start        # Lance le serveur en mode production
@@ -117,6 +126,7 @@ npm test         # Lance les tests unitaires
 ```
 
 **Frontend :**
+
 ```bash
 npm run dev      # Lance le serveur de développement
 npm run build    # Compile l'application pour la production
@@ -151,6 +161,7 @@ ScheduleManager/
 ## 🗄️ Modèle de données
 
 Le système gère les entités suivantes :
+
 - **Matières** : Les cours enseignés (Algorithmique, Base de données, etc.)
 - **Professeurs** : Les enseignants (permanents ou vacataires)
 - **Classes** : Les groupes d'étudiants (L1, L2, M1, M2, etc.)
@@ -161,6 +172,7 @@ Le système gère les entités suivantes :
 ## 🔐 Contraintes et validations
 
 Le système implémente des contraintes importantes :
+
 - Une classe ne peut pas avoir deux cours au même moment
 - Un professeur ne peut pas avoir deux cours simultanément
 - Une salle ne peut pas être utilisée par deux cours en même temps
@@ -172,6 +184,7 @@ Ce projet est sous licence MIT. Voir le fichier [LICENSE](LICENSE) pour plus de 
 ## 👥 Contribution
 
 Les contributions sont les bienvenues ! N'hésitez pas à :
+
 1. Fork le projet
 2. Créer une branche pour votre fonctionnalité (`git checkout -b feature/AmazingFeature`)
 3. Commiter vos changements (`git commit -m 'Add some AmazingFeature'`)
