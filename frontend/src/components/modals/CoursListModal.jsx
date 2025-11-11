@@ -20,7 +20,7 @@ import { CoursDetailsModal } from "./CoursDetailsModal.jsx"; // ← AJOUTÉ
 export const CoursListModal = ({
   isOpen,
   onClose,
-  coursList,
+  allCours, // ← MODIFIÉ : Tous les cours (état global)
   jour,
   creneau,
   onCoursClick, // Handler pour ouvrir modal édition
@@ -32,9 +32,17 @@ export const CoursListModal = ({
   const [isDeleting, setIsDeleting] = useState(false);
   const [deletedIds, setDeletedIds] = useState([]); // Tracker les IDs supprimés
 
-  // ← AJOUTÉ : État local pour le modal détails
+  // État local pour le modal détails
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);
   const [selectedCoursDetails, setSelectedCoursDetails] = useState(null);
+
+  // ← MODIFIÉ : Filtrer depuis allCours en temps réel
+  const coursList = useMemo(() => {
+    if (!allCours || !jour || !creneau?.id) return [];
+    return allCours.filter(
+      (c) => c.jour === jour && c.creneauId === creneau.id
+    );
+  }, [allCours, jour, creneau?.id]);
 
   // Filtrer les cours supprimés localement
   const visibleCoursList = useMemo(() => {
@@ -51,7 +59,7 @@ export const CoursListModal = ({
 
   // Handler qui ferme le modal liste ET ouvre modal édition
   const handleCoursClick = (cours) => {
-    onClose(); // Fermer ce modal
+    // onClose(); // Fermer ce modal
     onCoursClick?.(cours); // Ouvrir le modal d'édition
   };
 

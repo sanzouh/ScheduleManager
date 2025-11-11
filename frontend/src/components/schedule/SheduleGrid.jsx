@@ -21,8 +21,8 @@ export const ScheduleGrid = ({
 }) => {
   // État pour le modal "voir plus"
   const [modalListOpen, setModalListOpen] = useState(false);
-  const [selectedSlotCours, setSelectedSlotCours] = useState([]);
-  const [selectedSlotInfo, setSelectedSlotInfo] = useState(null);
+  // const [selectedSlotCours, setSelectedSlotCours] = useState([]); ← RETIRÉ
+  const [selectedSlotInfo, setSelectedSlotInfo] = useState(null); // On garde juste les critères
 
   // État pour le menu contextuel
   const [contextMenu, setContextMenu] = useState(null);
@@ -40,9 +40,9 @@ export const ScheduleGrid = ({
     return cours.filter((c) => c.jour === jour && c.creneauId === creneauId);
   };
 
-  // Handler pour ouvrir le modal liste
+  // Handler pour ouvrir le modal liste: Ne plus passer coursList, juste les critères
   const handleShowMore = (coursList, jour, creneau) => {
-    setSelectedSlotCours(coursList);
+    // setSelectedSlotCours(coursList);
     setSelectedSlotInfo({ jour, creneau });
     setModalListOpen(true);
   };
@@ -229,11 +229,12 @@ export const ScheduleGrid = ({
         </table>
       </div>
 
-      {/* Modal liste complète */}
+      {/* ← MODIFIÉ : Passer tous les cours + critères de filtrage */}
       <CoursListModal
         isOpen={modalListOpen}
         onClose={() => setModalListOpen(false)}
-        coursList={selectedSlotCours}
+        // coursList={selectedSlotCours}
+        allCours={cours} // ← AJOUTÉ : Tous les cours (état global)
         jour={selectedSlotInfo?.jour}
         creneau={selectedSlotInfo?.creneau}
         onCoursClick={onCoursClick}
