@@ -4,6 +4,7 @@ import { CourseCard } from "./CourseCard";
 import { CompactCourseCard } from "./CompactCourseCard";
 import { EmptySlot } from "./EmptySlot";
 import { CoursListModal } from "../modals/CoursListModal";
+import { CoursDetailsModal } from "../modals/CoursDetailsModal";
 import { DeleteConfirmDialog } from "../modals/DeleteConfirmDialog";
 import { ContextMenu } from "../common/ContextMenu";
 import { Pencil, Copy, Trash2, Eye } from "lucide-react";
@@ -14,34 +15,39 @@ export const ScheduleGrid = ({
   creneaux = [],
   onCoursClick,
   onEmptySlotClick,
-  onCoursDelete, // ← AJOUTÉ
-  onCoursDuplicate, // ← AJOUTÉ
-  viewMode = "global", // ← AJOUTÉ : Savoir si vue filtrée ou globale
+  onCoursDelete,
+  onCoursDuplicate,
+  viewMode = "global", // Savoir si vue filtrée ou globale
 }) => {
-  // ← AJOUTÉ : État pour le modal "voir plus"
+  // État pour le modal "voir plus"
   const [modalListOpen, setModalListOpen] = useState(false);
   const [selectedSlotCours, setSelectedSlotCours] = useState([]);
   const [selectedSlotInfo, setSelectedSlotInfo] = useState(null);
-  // ← AJOUTÉ : État pour le menu contextuel
+
+  // État pour le menu contextuel
   const [contextMenu, setContextMenu] = useState(null);
 
-  // ← AJOUTÉ : État pour le dialog de confirmation
+  // État pour le dialog de confirmation
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [coursToDelete, setCoursToDelete] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  // ← AJOUTÉ : État pour le modal détails
+  const [detailsModalOpen, setDetailsModalOpen] = useState(false);
+  const [selectedCoursDetails, setSelectedCoursDetails] = useState(null);
 
   const getCoursForSlot = (jour, creneauId) => {
     return cours.filter((c) => c.jour === jour && c.creneauId === creneauId);
   };
 
-  // ← AJOUTÉ : Handler pour ouvrir le modal liste
+  // Handler pour ouvrir le modal liste
   const handleShowMore = (coursList, jour, creneau) => {
     setSelectedSlotCours(coursList);
     setSelectedSlotInfo({ jour, creneau });
     setModalListOpen(true);
   };
 
-  // ← AJOUTÉ : Handler clic droit sur une carte
+  // Handler clic droit sur une carte
   const handleContextMenu = (e, cours) => {
     e.preventDefault();
     e.stopPropagation();
@@ -53,7 +59,13 @@ export const ScheduleGrid = ({
     });
   };
 
-  // ← AJOUTÉ : Actions du menu contextuel
+  // ← MODIFIÉ : Handler pour ouvrir le modal détails
+  const handleShowDetails = (cours) => {
+    setSelectedCoursDetails(cours);
+    setDetailsModalOpen(true);
+  };
+
+  // Actions du menu contextuel
   const getContextMenuActions = (cours) => [
     {
       label: "Modifier",
@@ -68,23 +80,21 @@ export const ScheduleGrid = ({
     {
       label: "Voir détails",
       icon: <Eye className="w-4 h-4" />,
-      onClick: () => {
-        console.log("Détails:", cours);
-      },
+      onClick: () => handleShowDetails(cours), // ← MODIFIÉ
     },
     {
       label: "Supprimer",
       icon: <Trash2 className="w-4 h-4" />,
       danger: true,
       onClick: () => {
-        // ← MODIFIÉ : Ouvrir le dialog au lieu de l'alert
+        // Ouvrir le dialog au lieu de l'alert
         setCoursToDelete(cours);
         setDeleteDialogOpen(true);
       },
     },
   ];
 
-  // ← AJOUTÉ : Handler pour confirmer la suppression
+  // Handler pour confirmer la suppression
   const handleConfirmDelete = async () => {
     if (!coursToDelete) return;
 
@@ -156,7 +166,7 @@ export const ScheduleGrid = ({
                     );
                   }
 
-                  // ← MODIFIÉ : Cours existants avec logique Google Agenda
+                  // Cours existants avec logique Google Agenda
                   if (coursSlot.length > 0) {
                     const isGlobalView = viewMode === "global";
                     const visibleCours = coursSlot.slice(0, MAX_VISIBLE);
@@ -192,7 +202,7 @@ export const ScheduleGrid = ({
                               onClick={() =>
                                 handleShowMore(coursSlot, jour, creneau)
                               }
-                              className="text-xs text-center py-2 rounded-md bg-muted hover:bg-muted/80 transition-colors font-medium text-muted-foreground"
+                              className="text-xs text-center py-2 rounded-md bg-muted/80 hover:bg-primary/10 border border-border hover:border-primary/30 transition-all font-medium text-foreground hover:text-primary"
                             >
                               +{hiddenCount} autre{hiddenCount > 1 ? "s" : ""}
                             </button>
@@ -219,18 +229,28 @@ export const ScheduleGrid = ({
         </table>
       </div>
 
-      {/* ← AJOUTÉ : Modal liste complète */}
+      {/* Modal liste complète */}
       <CoursListModal
         isOpen={modalListOpen}
         onClose={() => setModalListOpen(false)}
         coursList={selectedSlotCours}
         jour={selectedSlotInfo?.jour}
         creneau={selectedSlotInfo?.creneau}
-        onCoursClick={onCoursClick} // ← AJOUTÉ : Passer le handler
-        onCoursDelete={onCoursDelete} // ← AJOUTÉ
+        onCoursClick={onCoursClick}
+        onCoursDelete={onCoursDelete}
       />
 
-      {/* ← AJOUTÉ : Menu contextuel */}
+      {/* ← AJOUTÉ : Modal détails */}
+      <CoursDetailsModal
+        isOpen={detailsModalOpen}
+        onClose={() => {
+          setDetailsModalOpen(false);
+          setSelectedCoursDetails(null);
+        }}
+        cours={selectedCoursDetails}
+      />
+
+      {/* Menu contextuel */}
       {contextMenu && (
         <ContextMenu
           x={contextMenu.x}
@@ -240,7 +260,7 @@ export const ScheduleGrid = ({
         />
       )}
 
-      {/* ← AJOUTÉ : Dialog de confirmation de suppression */}
+      {/* Dialog de confirmation de suppression */}
       <DeleteConfirmDialog
         isOpen={deleteDialogOpen}
         onClose={() => {

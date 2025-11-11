@@ -121,6 +121,7 @@ function App() {
     } else {
       toast.error(result.error || "Erreur lors de la suppression");
     }
+    return result; // ← IMPORTANT : Retourner le résultat
   };
 
   // ← AJOUTÉ : Handler pour dupliquer
